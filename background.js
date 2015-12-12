@@ -1,5 +1,9 @@
+pusher = new Pusher('9d3ca23fe4e0cd26c73c', {
+    authEndpoint: 'http://real-time-browsing.tombclarke.xyz/index.php'
+  });
+
+
 chrome.runtime.onMessage.addListener(function(request) {
-	alert("from the host");
 	channel = pusher.subscribe("private-" + request.token);
 	
 	if(request.from == "host"){
@@ -15,6 +19,5 @@ chrome.runtime.onMessage.addListener(function(request) {
 		});
 	}
 
-	response({msg: "goodbye"});
 
 });

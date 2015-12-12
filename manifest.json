@@ -15,7 +15,7 @@
   },
 
     "content_scripts": [ {
-    "js": [ "background.js", "jquery.min.js", "pusher.min.js" ],
+    "js": [  "pusher.min.js", "jquery.min.js", "background.js" ],
     "matches": [ "http://*/*", "https://*/*"]
   }]
 }
