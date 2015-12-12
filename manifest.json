@@ -9,11 +9,6 @@
     "default_popup": "popup.html"
   },
 
-  "background": {
-    "scripts": [ "pusher.min.js"],
-    "persistent": true
-  },
-
     "content_scripts": [ {
     "js": [  "pusher.min.js", "jquery.min.js", "background.js" ],
     "matches": [ "http://*/*", "https://*/*"]

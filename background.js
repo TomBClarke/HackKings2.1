@@ -1,9 +1,19 @@
-pusher = new Pusher('9d3ca23fe4e0cd26c73c', {
-    authEndpoint: 'http://realtime-browsing.tombclarke.xyz/index.php'
-  });
+
 
 
 chrome.runtime.onMessage.addListener(function(request) {
+
+	Pusher.log = function(message) {
+      if (window.console && window.console.log) {
+        window.console.log(message);
+      }
+    };
+
+	var pusher = new Pusher('9d3ca23fe4e0cd26c73c', {
+		encrypted: true,
+    authEndpoint: 'http://realtime-browsing.tomclarke.xyz/index.php'
+  });
+
 	channel = pusher.subscribe("private-" + request.token);
 	
 	if(request.from == "host"){
