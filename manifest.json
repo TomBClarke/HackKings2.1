@@ -10,7 +10,7 @@
   },
 
   "background": {
-    "scripts": ["pusher.min.js"],
+    "scripts": [ "background.js", "pusher.min.js"],
     "persistent": true
   },
 
