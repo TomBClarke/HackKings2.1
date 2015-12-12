@@ -20,10 +20,13 @@ var pusher = new Pusher('9d3ca23fe4e0cd26c73c', {
 
 
 document.getElementById('start-session').onclick = function() {
+    var port = chrome.extension.connect({name: "Fuck this shit then."});
+    port.postMessage("I've come to talk with you again.");
+
 	document.getElementById("result").innerHTML =  "Send this to someone " + makeid(10);
 
 	channel = pusher.subscribe("private-" + id);
 
 	window.channel = channel;
 
-}
+};
