@@ -13,15 +13,15 @@ chrome.runtime.onMessage.addListener(function(request) {
 	channel = getPusher().subscribe("private-" + request.token);
 	
 	if(request.from == "host"){
-		alert("from the host");
 	    channel.bind('client-user_joined', function(data) {
-		  channel.trigger("client-website_link", { website: website });
+			var html = document.getElementsByName("html")[0].innerHTML;
+			channel.trigger("client-website_link", { html: html });
 		});
 	} else {
-		channel.trigger("client-user_joined", { yo: "man" });
+		channel.trigger("client-user_joined", {nil: "nil?"});
 
 		channel.bind('client-website_link', function(data) {
-		  	alert("got the link back");
+			document.getElementsByName("html")[0].innerHTML = data.html;
 		});
 	}
 
