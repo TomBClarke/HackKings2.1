@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+
+  "name": "Realtime browsing",
+  "description": "This extension allows you to browse websites together",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+
+  "background": {
+    "scripts": ["pusher.min.js"],
+    "persistent": true
+  },
+
+    "content_scripts": [ {
+    "js": [ "jquery.min.js", "pusher.min.js" ],
+    "matches": [ "http://*/*", "https://*/*"]
+  }]
+}
