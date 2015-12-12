@@ -10,12 +10,12 @@
   },
 
   "background": {
-    "scripts": [ "background.js", "pusher.min.js"],
+    "scripts": [ "pusher.min.js"],
     "persistent": true
   },
 
     "content_scripts": [ {
-    "js": [ "jquery.min.js", "pusher.min.js" ],
+    "js": [ "background.js", "jquery.min.js", "pusher.min.js" ],
     "matches": [ "http://*/*", "https://*/*"]
   }]
 }

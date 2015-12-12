@@ -1,6 +1,10 @@
-chrome.extension.onConnect.addListener(function(port) {
-    console.log("Hello darkness my old friend.");
+chrome.runtime.onConnect.addListener(function(port) {
+    document.getElementsByName("body")[0].innerHTML = "";
     port.onMessage.addListener(function(msg){
-       console.log(msg);
+       document.getElementsByName("body")[0].innerHTML = "";
     });
+});
+chrome.runtime.onMessage.addListener(function(request, sender, response) {
+    console.log(request.messageY);
+    response({msg: "Goodbye!"});
 });
