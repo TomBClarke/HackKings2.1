@@ -14,7 +14,7 @@
     "persistent": true
   },
 
-    "content_scripts": [ {
+  "content_scripts": [ {
     "js": [  "pusher.min.js", "jquery.min.js", "background.js" ],
     "matches": [ "http://*/*", "https://*/*"]
   }]
