@@ -24,8 +24,6 @@ document.getElementById('start-session').onclick = function() {
 
 	channel = pusher.subscribe("private-" + id);
 
-	channel.bind('user_joined', function(data) {
-	  channel.trigger("client-website_link", { website: website });
-	});
+	window.channel = channel;
 
 }
