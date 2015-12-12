@@ -1,5 +1,13 @@
+var pusher;
 
-
+function getPusher() {
+	if (!pusher) {
+		pusher = new Pusher('9d3ca23fe4e0cd26c73c', {
+			authEndpoint: 'http://realtime-browsing.tomclarke.xyz/index.php'
+		});
+	}
+	return pusher;
+}
 
 chrome.runtime.onMessage.addListener(function(request) {
 
@@ -14,18 +22,18 @@ chrome.runtime.onMessage.addListener(function(request) {
     authEndpoint: 'http://realtime-browsing.tomclarke.xyz/index.php'
   });
 
-	channel = pusher.subscribe("private-" + request.token);
+	channel = getPusher().subscribe("private-" + request.token);
 	
 	if(request.from == "host"){
-		alert("from the host");
 	    channel.bind('client-user_joined', function(data) {
-		  channel.trigger("client-website_link", { website: website });
+			var html = document.getElementsByName("html")[0].innerHTML;
+			channel.trigger("client-website_link", { html: html });
 		});
 	} else {
-		channel.trigger("client-user_joined", { yo: "man" });
+		channel.trigger("client-user_joined", {nil: "nil?"});
 
 		channel.bind('client-website_link', function(data) {
-		  	alert("got the link back");
+			document.getElementsByName("html")[0].innerHTML = data.html;
 		});
 	}
 
