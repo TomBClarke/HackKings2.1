@@ -25,12 +25,26 @@ document.getElementById('start-session').onclick = function() {
 
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
         for (var i = 0; i < tabs.length; i++) {
-            chrome.tabs.sendMessage(tabs[0].id, {token: token}, function (response) {
+            chrome.tabs.sendMessage(tabs[0].id, {token: token, from: "host"}, function (response) {
                 console.log(response.msg);
             });
         }
     });
 
 	document.getElementById("result").innerHTML =  "Send this to someone " + token;
+
+};
+
+document.getElementById('submitButton').onclick = function() {
+
+	var token = document.getElementById("token").value;
+
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        for (var i = 0; i < tabs.length; i++) {
+            chrome.tabs.sendMessage(tabs[0].id, {token: token, from: "client"}, function (response) {
+                console.log(response.msg);
+            });
+        }
+    });
 
 };
