@@ -20,13 +20,17 @@ var pusher = new Pusher('9d3ca23fe4e0cd26c73c', {
 
 
 document.getElementById('start-session').onclick = function() {
-    var port = chrome.extension.connect({name: "Fuck this shit then."});
-    port.postMessage("I've come to talk with you again.");
 
-	document.getElementById("result").innerHTML =  "Send this to someone " + makeid(10);
+	var token = makeid(10);
 
-	channel = pusher.subscribe("private-" + id);
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        for (var i = 0; i < tabs.length; i++) {
+            chrome.tabs.sendMessage(tabs[0].id, {token: token}, function (response) {
+                console.log(response.msg);
+            });
+        }
+    });
 
-	window.channel = channel;
+	document.getElementById("result").innerHTML =  "Send this to someone " + token;
 
 };
