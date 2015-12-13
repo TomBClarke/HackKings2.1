@@ -21,11 +21,15 @@ chrome.runtime.onMessage.addListener(function(request) {
 	    channel.bind('client-user_joined', function(data) {
 			var html = document.documentElement.innerHTML;
 			setTimeout(function() {
+				console.log("LENGTH BEFORE: " + html.length);
+				html = LZString.compress(html);
+				console.log("LENGTH AFTER: " + html.length);
 				channel.trigger("client-website_link", { html: html });
 			}, 2500);
 		});
 	} else {
 		channel.bind('client-website_link', function(data) {
+			html = LZString.decompress(data.html);
 			document.write(data.html);
 		});
 
