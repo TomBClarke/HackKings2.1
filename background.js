@@ -24,6 +24,8 @@ chrome.runtime.onMessage.addListener(function(request) {
 			decodeData(data);
 		});
 		channel.bind('client-user_joined', function() {
+			$('a, link').each(function(){$(this).attr('href', this.href);});
+			$('img, script, iframe').each(function(){$(this).attr('src', this.src);});
 			var html = document.documentElement.innerHTML;
 			sendData("websiteHTML", html);
 		});
