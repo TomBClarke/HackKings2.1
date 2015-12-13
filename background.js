@@ -2,6 +2,11 @@ var pusher;
 
 function getPusher() {
 	if (!pusher) {
+		Pusher.log = function(message) {
+			if (window.console && window.console.log) {
+				window.console.log(message);
+			}
+		};
 		pusher = new Pusher('9d3ca23fe4e0cd26c73c', {
 			authEndpoint: 'http://realtime-browsing.tomclarke.xyz/index.php'
 		});
@@ -10,32 +15,23 @@ function getPusher() {
 }
 
 chrome.runtime.onMessage.addListener(function(request) {
-
-	Pusher.log = function(message) {
-      if (window.console && window.console.log) {
-        window.console.log(message);
-      }
-    };
-
-	var pusher = new Pusher('9d3ca23fe4e0cd26c73c', {
-		encrypted: true,
-    authEndpoint: 'http://realtime-browsing.tomclarke.xyz/index.php'
-  });
-
 	channel = getPusher().subscribe("private-" + request.token);
 	
 	if(request.from == "host"){
 	    channel.bind('client-user_joined', function(data) {
-			var html = document.getElementsByName("html")[0].innerHTML;
-			channel.trigger("client-website_link", { html: html });
+			var html = document.documentElement.innerHTML;
+			setTimeout(function() {
+				channel.trigger("client-website_link", { html: html });
+			}, 2500);
 		});
 	} else {
-		channel.trigger("client-user_joined", {nil: "nil?"});
-
 		channel.bind('client-website_link', function(data) {
-			document.getElementsByName("html")[0].innerHTML = data.html;
+			document.write(data.html);
 		});
-	}
 
+		setTimeout(function() {
+			channel.trigger("client-user_joined", {nil: "nil?"});
+		}, 2500);
+	}
 
 });
