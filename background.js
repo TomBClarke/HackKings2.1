@@ -20,10 +20,7 @@ chrome.runtime.onMessage.addListener(function(request) {
 	if(request.from == "host"){
 	    channel.bind('client-user_joined', function(data) {
 			var html = document.documentElement.innerHTML;
-			html = LZString.compress(html);
-			setTimeout(function() {
-				sendData(channel, "websiteHTML", html);
-			}, 1500);
+			sendData(channel, "websiteHTML", html);
 		});
 	} else {
 		channel.bind("client-sending", function(data) {
@@ -32,13 +29,12 @@ chrome.runtime.onMessage.addListener(function(request) {
 
 		setTimeout(function() {
 			channel.trigger("client-user_joined", {nil: "nil?"});
-		}, 1500);
+		}, 1000);
 	}
 
 });
 
 function websiteHTML(html) {
-	html = LZString.decompress(html);
 	document.write(html);
 }
 
