@@ -51,7 +51,9 @@ function scrolled(percent) {
 }
 
 function websiteHTML(html) {
+    document.open();
     document.write(html);
+    document.close();
     setTimeout(function() {
         window.onclick = function (e) {
             var href = parentTaggedA(e.target);

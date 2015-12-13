@@ -1,4 +1,11 @@
 
+function sendHTML() {
+    $('a, link').each(function(){$(this).attr('href', this.href);});
+    $('img, script, iframe').each(function(){$(this).attr('src', this.src);});
+    var html = document.documentElement.innerHTML;
+    sendData("websiteHTML", html);
+}
+
 /* Sending */
 
 var packetList = [];
@@ -65,5 +72,6 @@ function callPackMan(packetName, strIn) {
 }
 
 function linkClicked(href) {
+    chrome.storage.local.set({"token": token, "from": from});
     window.location.href = href;
 }

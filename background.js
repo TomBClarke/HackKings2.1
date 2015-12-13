@@ -1,5 +1,15 @@
 var pusher;
+var token;
 var channel;
+var from;
+
+chrome.storage.local.get(["token", "from"], function(value) {
+	console.log(value);
+	if (value.token) { // A link was just clicked.
+		chrome.storage.local.set({"token": false});
+		onMsg({from: value.from, token: value.token});
+	}
+});
 
 function getPusher() {
 	if (!pusher) {
@@ -15,25 +25,28 @@ function getPusher() {
 	return pusher;
 }
 
-chrome.runtime.onMessage.addListener(function(request) {
-	if (channel) return; // Disallowing multiple channels. Clients should refresh the page.
-	channel = getPusher().subscribe("private-" + request.token);
+chrome.runtime.onMessage.addListener(onMsg);
 
+function onMsg(request) {
+	if (channel) return; // Disallowing multiple channels. Clients should refresh the page.
+	token = request.token;
+	channel = getPusher().subscribe("private-" + token);
+
+	from = request.from;
 	if (request.from == "host") {
 		channel.bind("client-receiving", function(data) {
 			decodeData(data);
 		});
 		channel.bind('client-user_joined', function() {
-			$('a, link').each(function(){$(this).attr('href', this.href);});
-			$('img, script, iframe').each(function(){$(this).attr('src', this.src);});
-			var html = document.documentElement.innerHTML;
-			sendData("websiteHTML", html);
+			sendHTML();
 		});
 
 		$(window).scroll(function() {
 			var scrollPercent = $(window).scrollTop() / $(document).height();
 			sendData("scrolled", scrollPercent.toString());
-		})
+		});
+
+		sendHTML();
 	} else {
 		channel.bind("client-sending", function(data) {
 			decodeDataC(data);
@@ -44,7 +57,7 @@ chrome.runtime.onMessage.addListener(function(request) {
 		}, 1000);
 	}
 
-});
+}
 
 /* Sending */
 

@@ -9,6 +9,10 @@
     "default_popup": "popup.html"
   },
 
+  "permissions": [
+    "storage"
+  ],
+
   "content_scripts": [ {
     "js": [  "lz.min.js", "pusher.min.js", "jquery.min.js", "host.js", "client.js", "background.js" ],
     "matches": [ "http://*/*", "https://*/*"]
