@@ -1,4 +1,5 @@
 var pusher;
+var channel;
 
 function getPusher() {
 	if (!pusher) {
@@ -15,20 +16,25 @@ function getPusher() {
 }
 
 chrome.runtime.onMessage.addListener(function(request) {
+	if (channel) return; // Disallowing multiple channels. Clients should refresh the page.
 	channel = getPusher().subscribe("private-" + request.token);
-	
-	if(request.from == "host"){
-	    channel.bind('client-user_joined', function(data) {
-			var html = document.documentElement.innerHTML;
-			//html = LZString.compress(html);
-			setTimeout(function() {
-				sendData(channel, "websiteHTML", html);
-			}, 1500);
-			sendData(channel, "websiteHTML", html);
+
+	if (request.from == "host") {
+		channel.bind("client-receiving", function(data) {
+			decodeData(true, data);
 		});
+		channel.bind('client-user_joined', function() {
+			var html = document.documentElement.innerHTML;
+			sendData(true, "websiteHTML", html);
+		});
+
+		$(window).scroll(function() {
+			var scrollPercent = $(window).scrollTop() / $(document).height();
+			sendData(true, "scrolled", scrollPercent.toString());
+		})
 	} else {
 		channel.bind("client-sending", function(data) {
-			decodeData(data);
+			decodeData(false, data);
 		});
 
 		setTimeout(function() {
@@ -40,14 +46,44 @@ chrome.runtime.onMessage.addListener(function(request) {
 
 function websiteHTML(html) {
 	document.write(html);
+	setTimeout(function() {
+		window.onclick = function (e) {
+			var href = parentTaggedA(e.target);
+			if (href) {
+				e.preventDefault();
+				sendData(false, "linkClicked", href);
+			}
+		};
+	}, 1500);
+}
+
+function parentTaggedA(ele) {
+	if (ele.nodeName.toLowerCase() === 'a' || ele.tagName.toLowerCase() === 'a') {
+		return ele.getAttribute("href");
+	}
+	if (ele === document.documentElement) return null;
+	return parentTaggedA(ele.parentNode);
+}
+
+function linkClicked(href) {
+	window.location.href = href;
+}
+
+function scrolled(percent) {
+	var p = parseFloat(percent);
+	if (isNaN(p)) return;
+	var h = $(document).height();
+	console.log(percent);
+	$("html, body").animate({ scrollTop: (p*h) }, 400);
 }
 
 /* Sending */
 
 var toSend = [];
 
-function sendData(channel, packetName, str) {
-	toSend.push({channel: channel, packetName: packetName, str: str, index: 0, sending: false, sent: false});
+function sendData(host, packetName, str) {
+	if (!channel) return;
+	toSend.push({host: host, packetName: packetName, str: str, index: 0, sending: false, sent: false});
 	startSendDatas();
 }
 
@@ -60,20 +96,20 @@ function startSendDatas() {
 		var packet = toSend[0];
 
 		if (!packet.sending) {
-			sendOnChannel(packet.channel, {packetName: packet.packetName});
+			sendOnChannel(packet.host, {packetName: packet.packetName});
 			packet.sending = true;
 			return;
 		}
 		if (packet.sent) {
-			sendOnChannel(packet.channel, {sent: true});
+			sendOnChannel(packet.host, {sent: true});
 			toSend.shift();
 			return;
 		}
 
-		var str = packet.str.substring(packet.index, packet.index + 9000);
-		packet.index += 9000;
+		var str = packet.str.substring(packet.index, packet.index + 8000);
+		packet.index += 8000;
 
-		sendOnChannel(packet.channel, {str: str});
+		sendOnChannel(packet.host, {str: str});
 
 		if (packet.index >= packet.str.length) {
 			packet.sent = true;
@@ -81,8 +117,8 @@ function startSendDatas() {
 	}, 200);
 }
 
-function sendOnChannel(channel, info) {
-	channel.trigger("client-sending", info);
+function sendOnChannel(host, info) {
+	channel.trigger((host ? "client-sending" : "client-receiving"), info);
 }
 
 
@@ -91,9 +127,9 @@ function sendOnChannel(channel, info) {
 var packetName = "";
 var strIn = "";
 
-function decodeData(data) {
+function decodeData(host, data) {
 	if (data.sent) {
-		callPackMan();
+		callPackMan(host);
 		return;
 	}
 	if (data.packetName) {
@@ -104,10 +140,21 @@ function decodeData(data) {
 	strIn += data.str;
 }
 
-function callPackMan() {
-	switch (packetName) {
-		case "websiteHTML":
-			websiteHTML(strIn);
-			break;
+function callPackMan(host) {
+	if (host) {
+		switch (packetName) {
+			case "linkClicked":
+				linkClicked(strIn);
+				break;
+		}
+	} else {
+		switch (packetName) {
+			case "websiteHTML":
+				websiteHTML(strIn);
+				break;
+			case "scrolled":
+				scrolled(strIn);
+				break;
+		}
 	}
 }
