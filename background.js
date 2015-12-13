@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener(function(request) {
 	if(request.from == "host"){
 	    channel.bind('client-user_joined', function(data) {
 			var html = document.documentElement.innerHTML;
-			html = LZString.compress(html);
+			//html = LZString.compress(html);
 			setTimeout(function() {
 				sendData(channel, "websiteHTML", html);
 			}, 1500);
@@ -38,7 +38,7 @@ chrome.runtime.onMessage.addListener(function(request) {
 });
 
 function websiteHTML(html) {
-	html = LZString.decompress(html);
+	//html = LZString.decompress(html);
 	document.write(html);
 }
 
