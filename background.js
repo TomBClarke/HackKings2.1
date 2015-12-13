@@ -41,6 +41,14 @@ function onMsg(request) {
 			sendHTML();
 		});
 
+		window.onclick = function (e) {
+			var href = parentTaggedA(e.target);
+			if (href) {
+				e.preventDefault();
+				linkClicked(href);
+			}
+		};
+
 		$(window).scroll(function() {
 			var scrollPercent = $(window).scrollTop() / $(document).height();
 			sendData("scrolled", scrollPercent.toString());
