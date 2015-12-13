@@ -21,20 +21,20 @@ chrome.runtime.onMessage.addListener(function(request) {
 
 	if (request.from == "host") {
 		channel.bind("client-receiving", function(data) {
-			decodeData(true, data);
+			decodeData(data);
 		});
 		channel.bind('client-user_joined', function() {
 			var html = document.documentElement.innerHTML;
-			sendData(true, "websiteHTML", html);
+			sendData("websiteHTML", html);
 		});
 
 		$(window).scroll(function() {
 			var scrollPercent = $(window).scrollTop() / $(document).height();
-			sendData(true, "scrolled", scrollPercent.toString());
+			sendData("scrolled", scrollPercent.toString());
 		})
 	} else {
 		channel.bind("client-sending", function(data) {
-			decodeData(false, data);
+			decodeDataC(data);
 		});
 
 		setTimeout(function() {
@@ -51,7 +51,7 @@ function websiteHTML(html) {
 			var href = parentTaggedA(e.target);
 			if (href) {
 				e.preventDefault();
-				sendData(false, "linkClicked", href);
+				sendDataC("linkClicked", href);
 			}
 		};
 	}, 1500);
@@ -81,9 +81,9 @@ function scrolled(percent) {
 
 var toSend = [];
 
-function sendData(host, packetName, str) {
+function sendData(packetName, str) {
 	if (!channel) return;
-	toSend.push({host: host, packetName: packetName, str: str, index: 0, sending: false, sent: false});
+	toSend.push({packetName: packetName, str: str, index: 0, sending: false, sent: false});
 	startSendDatas();
 }
 
@@ -96,12 +96,12 @@ function startSendDatas() {
 		var packet = toSend[0];
 
 		if (!packet.sending) {
-			sendOnChannel(packet.host, {packetName: packet.packetName});
+			sendOnChannel(true, {packetName: packet.packetName});
 			packet.sending = true;
 			return;
 		}
 		if (packet.sent) {
-			sendOnChannel(packet.host, {sent: true});
+			sendOnChannel(true, {sent: true});
 			toSend.shift();
 			return;
 		}
@@ -109,12 +109,16 @@ function startSendDatas() {
 		var str = packet.str.substring(packet.index, packet.index + 8000);
 		packet.index += 8000;
 
-		sendOnChannel(packet.host, {str: str});
+		sendOnChannel(true, {str: str});
 
 		if (packet.index >= packet.str.length) {
 			packet.sent = true;
 		}
-	}, 200);
+	}, 500);
+}
+
+function sendDataC(packetName, str) {
+	sendOnChannel(false, {packetName: packetName, str: str});
 }
 
 function sendOnChannel(host, info) {
@@ -127,9 +131,9 @@ function sendOnChannel(host, info) {
 var packetName = "";
 var strIn = "";
 
-function decodeData(host, data) {
+function decodeDataC(data) {
 	if (data.sent) {
-		callPackMan(host);
+		callPackMan();
 		return;
 	}
 	if (data.packetName) {
@@ -140,21 +144,26 @@ function decodeData(host, data) {
 	strIn += data.str;
 }
 
-function callPackMan(host) {
-	if (host) {
-		switch (packetName) {
-			case "linkClicked":
-				linkClicked(strIn);
-				break;
-		}
-	} else {
-		switch (packetName) {
-			case "websiteHTML":
-				websiteHTML(strIn);
-				break;
-			case "scrolled":
-				scrolled(strIn);
-				break;
-		}
+function decodeData(data) {
+	packetName = data.packetName;
+	strIn = data.str;
+	callPackManC();
+}
+
+function callPackManC() {
+	switch (packetName) {
+		case "linkClicked":
+			linkClicked(strIn);
+			break;
+	}
+}
+function callPackMan() {
+	switch (packetName) {
+		case "websiteHTML":
+			websiteHTML(strIn);
+			break;
+		case "scrolled":
+			scrolled(strIn);
+			break;
 	}
 }
