@@ -21,17 +21,91 @@ chrome.runtime.onMessage.addListener(function(request) {
 	    channel.bind('client-user_joined', function(data) {
 			var html = document.documentElement.innerHTML;
 			setTimeout(function() {
-				channel.trigger("client-website_link", { html: html });
-			}, 2500);
+				sendData(channel, "websiteHTML", html);
+			}, 1500);
 		});
 	} else {
-		channel.bind('client-website_link', function(data) {
-			document.write(data.html);
+		channel.bind("client-sending", function(data) {
+			decodeData(data);
 		});
 
 		setTimeout(function() {
 			channel.trigger("client-user_joined", {nil: "nil?"});
-		}, 2500);
+		}, 1500);
 	}
 
 });
+
+function websiteHTML(html) {
+	document.write(html);
+}
+
+/* Sending */
+
+var toSend = [];
+
+function sendData(channel, packetName, str) {
+	toSend.push({channel: channel, packetName: packetName, str: str, index: 0, sending: false, sent: false});
+	startSendDatas();
+}
+
+var sending;
+
+function startSendDatas() {
+	if (sending) return;
+	setInterval(function() {
+		if (toSend.length == 0) return;
+		var packet = toSend[0];
+
+		if (!packet.sending) {
+			sendOnChannel(packet.channel, {packetName: packet.packetName});
+			packet.sending = true;
+			return;
+		}
+		if (packet.sent) {
+			sendOnChannel(packet.channel, {sent: true});
+			toSend.shift();
+			return;
+		}
+
+		var str = packet.str.substring(packet.index, packet.index + 9000);
+		packet.index += 9000;
+
+		sendOnChannel(packet.channel, {str: str});
+
+		if (packet.index >= packet.str.length) {
+			packet.sent = true;
+		}
+	}, 200);
+}
+
+function sendOnChannel(channel, info) {
+	channel.trigger("client-sending", info);
+}
+
+
+/*  Decoding */
+
+var packetName = "";
+var strIn = "";
+
+function decodeData(data) {
+	if (data.sent) {
+		callPackMan();
+		return;
+	}
+	if (data.packetName) {
+		packetName = data.packetName;
+		strIn = "";
+		return;
+	}
+	strIn += data.str;
+}
+
+function callPackMan() {
+	switch (packetName) {
+		case "websiteHTML":
+			websiteHTML(strIn);
+			break;
+	}
+}
