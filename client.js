@@ -11,6 +11,12 @@ var packetName = "";
 var strIn = "";
 
 function decodeDataC(data) {
+    if (data.singleSend) {
+        packetName = data.packetName;
+        strIn = data.str;
+        callPackManC();
+        return;
+    }
     if (data.sent) {
         callPackManC();
         return;

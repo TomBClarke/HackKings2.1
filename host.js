@@ -1,11 +1,11 @@
 
 /* Sending */
 
-var toSend = [];
+var packetList = [];
 
 function sendData(packetName, str) {
     if (!channel) return;
-    toSend.push({packetName: packetName, str: str, index: 0, sending: false, sent: false});
+    packetList.push({packetName: packetName, str: str, index: 0, sending: false, sent: false});
     startSendDatas();
 }
 
@@ -14,8 +14,15 @@ var sending;
 function startSendDatas() {
     if (sending) return;
     setInterval(function() {
-        if (toSend.length == 0) return;
-        var packet = toSend[0];
+        if (packetList.length == 0) return;
+
+        var packet = packetList[0];
+
+        if (packet.str.length < 8000) {
+            sendOnChannel(true, {packetName: packet.packetName, str: packet.str, singleSend: true});
+            packetList.shift();
+            return
+        }
 
         if (!packet.sending) {
             sendOnChannel(true, {packetName: packet.packetName});
@@ -24,7 +31,7 @@ function startSendDatas() {
         }
         if (packet.sent) {
             sendOnChannel(true, {sent: true});
-            toSend.shift();
+            packetList.shift();
             return;
         }
 
