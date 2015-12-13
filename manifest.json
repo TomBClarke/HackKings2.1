@@ -10,7 +10,7 @@
   },
 
   "content_scripts": [ {
-    "js": [  "lz.min.js", "pusher.min.js", "jquery.min.js", "background.js" ],
+    "js": [  "lz.min.js", "pusher.min.js", "jquery.min.js", "host.js", "client.js", "background.js" ],
     "matches": [ "http://*/*", "https://*/*"]
   }]
 }
