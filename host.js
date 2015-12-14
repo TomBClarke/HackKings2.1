@@ -51,7 +51,7 @@ function startSendDatas() {
         if (packet.index >= packet.str.length) {
             packet.sent = true;
         }
-    }, 500);
+    }, 110);
 }
 
 /* Decoding */

@@ -47,7 +47,7 @@ function scrolled(percent) {
     if (isNaN(p)) return;
     var h = $(document).height();
     console.log(percent);
-    $("html, body").animate({ scrollTop: (p*h) }, 400);
+    $("html, body").animate({ scrollTop: (p*h) }, 50);
 }
 
 function websiteHTML(html) {
