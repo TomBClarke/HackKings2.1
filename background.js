@@ -2,11 +2,14 @@ var pusher;
 var token;
 var channel;
 var from;
+var newPage;
+connected = false;
 
 chrome.storage.local.get(["token", "from"], function(value) {
 	console.log(value);
 	if (value.token) { // A link was just clicked.
 		chrome.storage.local.set({"token": false});
+		newPage = true;
 		onMsg({from: value.from, token: value.token});
 	}
 });
@@ -49,9 +52,14 @@ function onMsg(request) {
 			}
 		};
 
-		$(window).scroll(function() {
+		$(window).scroll( $.throttle( 100, function() {
 			var scrollPercent = $(window).scrollTop() / $(document).height();
 			sendData("scrolled", scrollPercent.toString());
+		}));
+		
+
+		channel.bind('pusher:subscription_succeeded', function() {
+			connected = true;
 		});
 
 		sendHTML();

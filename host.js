@@ -23,6 +23,7 @@ function startSendDatas() {
     sendingDatas = true;
     setInterval(function() {
         if (packetList.length == 0) return;
+        if (!connected) return;
 
         var packet = packetList[0];
 
@@ -51,7 +52,7 @@ function startSendDatas() {
         if (packet.index >= packet.str.length) {
             packet.sent = true;
         }
-    }, 110);
+    }, 140);
 }
 
 /* Decoding */

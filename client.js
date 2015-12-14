@@ -18,7 +18,11 @@ function decodeDataC(data) {
         return;
     }
     if (data.sent) {
+        packetName = "websiteHTML";
+        console.log(packetName);
+        console.log(strIn.substring(0, 50));
         callPackManC();
+
         return;
     }
     if (data.packetName) {
@@ -35,6 +39,8 @@ function callPackManC() {
     switch (packetName) {
         case "websiteHTML":
             websiteHTML(strIn);
+            strIn = "";
+            packetName = "";
             break;
         case "scrolled":
             scrolled(strIn);
@@ -52,6 +58,7 @@ function scrolled(percent) {
 
 function websiteHTML(html) {
     document.open();
+    document.write('');
     document.write(html);
     document.close();
     setTimeout(function() {
