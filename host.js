@@ -2,8 +2,12 @@
 function sendHTML() {
     $('a, link').each(function(){$(this).attr('href', this.href);});
     $('img, script, iframe').each(function(){$(this).attr('src', this.src);});
-    var html = document.documentElement.innerHTML;
-    sendData("websiteHTML", html);
+    var str = JSON.stringify({
+        href: window.location.href,
+        siteVer: siteVer,
+        html: document.documentElement.innerHTML
+    });
+    sendData("websiteHTML", str);
 }
 
 /* Sending */
@@ -66,13 +70,8 @@ function decodeData(data) {
 
 function callPackMan(packetName, strIn) {
     switch (packetName) {
-        case "linkClicked":
-            linkClicked(strIn);
+        case "setURL":
+            setURL(strIn);
             break;
     }
-}
-
-function linkClicked(href) {
-    chrome.storage.local.set({"token": token, "from": from});
-    window.location.href = href;
 }
