@@ -16,10 +16,11 @@ function sendData(packetName, str) {
     startSendDatas();
 }
 
-var sending;
+var sendingDatas = false;
 
 function startSendDatas() {
-    if (sending) return;
+    if (sendingDatas) return;
+    sendingDatas = true;
     setInterval(function() {
         if (packetList.length == 0) return;
 
