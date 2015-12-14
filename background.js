@@ -2,14 +2,13 @@ var pusher;
 var token;
 var channel;
 var from;
-var newPage;
+var siteVer = Math.random().toString();
 connected = false;
 
 chrome.storage.local.get(["token", "from"], function(value) {
 	console.log(value);
 	if (value.token) { // A link was just clicked.
 		chrome.storage.local.set({"token": false});
-		newPage = true;
 		onMsg({from: value.from, token: value.token});
 	}
 });
@@ -48,7 +47,7 @@ function onMsg(request) {
 			var href = parentTaggedA(e.target);
 			if (href) {
 				e.preventDefault();
-				linkClicked(href);
+				setURL(href);
 			}
 		};
 
@@ -79,4 +78,11 @@ function onMsg(request) {
 
 function sendOnChannel(host, info) {
 	channel.trigger((host ? "client-sending" : "client-receiving"), info);
+}
+
+/* Util */
+
+function setURL(href) {
+    chrome.storage.local.set({"token": token, "from": from});
+    window.location.href = href;
 }

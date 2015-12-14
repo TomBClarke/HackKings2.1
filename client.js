@@ -18,11 +18,7 @@ function decodeDataC(data) {
         return;
     }
     if (data.sent) {
-        packetName = "websiteHTML";
-        console.log(packetName);
-        console.log(strIn.substring(0, 50));
         callPackManC();
-
         return;
     }
     if (data.packetName) {
@@ -56,20 +52,28 @@ function scrolled(percent) {
     $("html, body").animate({ scrollTop: (p*h) }, 50);
 }
 
-function websiteHTML(html) {
-    document.open();
-    document.write('');
-    document.write(html);
-    document.close();
-    setTimeout(function() {
-        window.onclick = function (e) {
-            var href = parentTaggedA(e.target);
-            if (href) {
-                e.preventDefault();
-                sendDataC("linkClicked", href);
-            }
-        };
-    }, 1500);
+function websiteHTML(str) {
+    var json = JSON.parse(str);
+    if (json.href != window.location.href) {
+        setURL(json.href);
+        return;
+    }
+    if (json.siteVer != siteVer) { // Is the current view up-to-date?
+        siteVer = json.siteVer;
+        document.open();
+        document.write('');
+        document.write(json.html);
+        document.close();
+        setTimeout(function () {
+            window.onclick = function (e) {
+                var href = parentTaggedA(e.target);
+                if (href) {
+                    e.preventDefault();
+                    sendDataC("setURL", href);
+                }
+            };
+        }, 1500);
+    }
 }
 
 function parentTaggedA(ele) {
