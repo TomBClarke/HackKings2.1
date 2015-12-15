@@ -1,6 +1,11 @@
 
 /* Sending */
 
+/**
+ * Send client data to the host.
+ * @param {string} packetName The name of the packet to send.
+ * @param {string} str The data to send in the form of a string.
+ */
 function sendDataC(packetName, str) {
     sendOnChannel(false, {packetName: packetName, str: str});
 }
@@ -10,6 +15,12 @@ function sendDataC(packetName, str) {
 var packetName = "";
 var strIn = "";
 
+/**
+ * Decodes a data packet or partial-packet from the host,
+ * then calls the appropriate method to handle it.
+ * If the data is a partial-packet, it will be reconstructed first.
+ * @param data The data packet or partial-packet.
+ */
 function decodeDataC(data) {
     if (data.singleSend) {
         packetName = data.packetName;
@@ -31,19 +42,27 @@ function decodeDataC(data) {
 
 /* PackMan */
 
+/**
+ * Calls the appropriate method to handle the last received packet.
+ * Should only be called from decodeData.
+ */
 function callPackManC() {
     switch (packetName) {
         case "websiteHTML":
             websiteHTML(strIn);
-            strIn = "";
-            packetName = "";
             break;
         case "scrolled":
             scrolled(strIn);
             break;
     }
+    strIn = "";
+    packetName = "";
 }
 
+/**
+ * Handles the scroll packet.
+ * @param {string} percent The decimal percentage of the page scrolled.
+ */
 function scrolled(percent) {
     var p = parseFloat(percent);
     if (isNaN(p)) return;
@@ -52,6 +71,13 @@ function scrolled(percent) {
     $("html, body").animate({ scrollTop: (p*h) }, 50);
 }
 
+/**
+ * Handles the website changing packet.
+ * @param {string} str A JSON string containing;
+ *                     the URL of the website,
+ *                     the version of the site (should be changed by the host when their page changes) and,
+ *                     the content of the page.
+ */
 function websiteHTML(str) {
     var json = JSON.parse(str);
     if (json.href != window.location.href) {
@@ -76,6 +102,12 @@ function websiteHTML(str) {
     }
 }
 
+/**
+ * A util function to get the href of a clicked link element, or of an element inside of a link element.
+ * @param {Element} ele The element to search in.
+ * @returns The URL if there is one;
+ *          null otherwise.
+ */
 function parentTaggedA(ele) {
     if (ele.nodeName.toLowerCase() === 'a' || ele.tagName.toLowerCase() === 'a') {
         return ele.getAttribute("href");

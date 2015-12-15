@@ -1,4 +1,6 @@
-
+/**
+ * Sends the current page's HTML to the clients.
+ */
 function sendHTML() {
     $('a, link').each(function(){$(this).attr('href', this.href);});
     $('img, script, iframe').each(function(){$(this).attr('src', this.src);});
@@ -14,6 +16,11 @@ function sendHTML() {
 
 var packetList = [];
 
+/**
+ * Sends a packet of data to the client.
+ * @param {string} packetName The name of the packet.
+ * @param {string} str The packet's data. Must be a string.
+ */
 function sendData(packetName, str) {
     if (!channel) return;
     packetList.push({packetName: packetName, str: str, index: 0, sending: false, sent: false});
@@ -22,6 +29,11 @@ function sendData(packetName, str) {
 
 var sendingDatas = false;
 
+/**
+ * Starts sending any packets added to the packetList to the clients.
+ * Packets may be split into partial-packets depending on size.
+ * This is a singleton.
+ */
 function startSendDatas() {
     if (sendingDatas) return;
     sendingDatas = true;
@@ -61,18 +73,20 @@ function startSendDatas() {
 
 /* Decoding */
 
+/**
+ * Decodes a data packet from the client,
+ * then calls the appropriate method to handle it.
+ * @param data The data packet.
+ */
 function decodeData(data) {
-    packetName = data.packetName;
-    strIn = data.str;
-    callPackMan(packetName, strIn);
-}
+    var packetName = data.packetName;
+    var strIn = data.str;
 
-/* PackMan */
-
-function callPackMan(packetName, strIn) {
     switch (packetName) {
         case "setURL":
             setURL(strIn);
             break;
     }
 }
+
+/* PackMan */
