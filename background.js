@@ -40,7 +40,7 @@ function getPusher() {
 chrome.runtime.onMessage.addListener(onMsg);
 
 /**
- * On a message sent from events.js or just called from this class.
+ * On a message sent from popup.js or just called from this class.
  * @param request An object containing; what role the plugin should play (host or client) and,
  *                the channel token to subscribe to.
  */
