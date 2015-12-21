@@ -77,14 +77,16 @@ function callPackManC() {
 
 /**
  * Handles the scroll packet.
- * @param {string} percent The decimal percentage of the page scrolled.
+ * @param {string} percents The decimal percentage of the page scrolled.
+ *                          In the form 'vScroll + " " + hScroll'.
  */
-function scrolled(percent) {
-    var p = parseFloat(percent);
-    if (isNaN(p)) return;
-    var h = $(document).height();
-    console.log(percent);
-    $("html, body").animate({ scrollTop: (p*h) }, 50);
+function scrolled(percents) {
+    console.log(percents);
+    var split = percents.split(" ");
+    var v = parseFloat(split[0]);
+    var h = parseFloat(split[1]);
+    if (isNaN(v) || isNaN(h)) return;
+    $("html, body").animate({ scrollTop: (v*$(document).height()), scrollLeft: (h*$(document).width()) }, 50);
 }
 
 /**

@@ -16,7 +16,10 @@ function registerLinkClicksH() {
 
 function registerScrollH() {
     $(window).scroll( $.throttle( 100, function() {
-        var scrollPercent = $(window).scrollTop() / $(document).height();
-        sendData("scrolled", scrollPercent.toString());
+        //noinspection JSValidateTypes It is infact a function.
+        var scrollVPercent = $(window).scrollTop() / $(document).height();
+        //noinspection JSValidateTypes It is infact a function.
+        var scrollHPercent = $(window).scrollLeft() / $(document).width();
+        sendData("scrolled", scrollVPercent.toString() + " " + scrollHPercent.toString());
     }));
 }
