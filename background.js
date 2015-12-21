@@ -58,19 +58,7 @@ function onMsg(request) {
 			sendHTML();
 		});
 
-		window.onclick = function (e) {
-			var href = parentTaggedA(e.target);
-			if (href) {
-				e.preventDefault();
-				setURL(href);
-			}
-		};
-
-		$(window).scroll( $.throttle( 100, function() {
-			var scrollPercent = $(window).scrollTop() / $(document).height();
-			sendData("scrolled", scrollPercent.toString());
-		}));
-		
+        registerHostEvents();
 
 		channel.bind('pusher:subscription_succeeded', function() {
 			connected = true;

@@ -106,14 +106,8 @@ function websiteHTML(str) {
         document.write('');
         document.write(json.html);
         document.close();
-        setTimeout(function () {
-            window.onclick = function (e) {
-                var href = parentTaggedA(e.target);
-                if (href) {
-                    e.preventDefault();
-                    sendDataC("setURL", href);
-                }
-            };
+        setTimeout(function() {
+            registerClientEvents();
         }, 1500);
     }
 }
