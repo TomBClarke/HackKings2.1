@@ -26,10 +26,23 @@ function decodeDataC(data) {
         packetName = data.packetName;
         strIn = data.str;
         callPackManC();
+        clearData();
         return;
     }
-    if (data.sent) {
-        callPackManC();
+    if (data.hash) {
+        if (packetName === "") {
+            console.error("No packetName specified. Probably joined during transmission.");
+            clearData();
+            return;
+        }
+
+        var hash = hashCode(strIn);
+        if (data.hash === hash) {
+            callPackManC();
+        } else {
+            console.error("Hash codes do not match. " + data.hash + " vs. " + hash);
+        }
+        clearData();
         return;
     }
     if (data.packetName) {
@@ -38,6 +51,11 @@ function decodeDataC(data) {
         return;
     }
     strIn += data.str;
+}
+
+function clearData() {
+    strIn = "";
+    packetName = "";
 }
 
 /* PackMan */
@@ -55,8 +73,6 @@ function callPackManC() {
             scrolled(strIn);
             break;
     }
-    strIn = "";
-    packetName = "";
 }
 
 /**

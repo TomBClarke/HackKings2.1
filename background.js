@@ -110,3 +110,19 @@ function setURL(href) {
     chrome.storage.local.set({"token": token, "from": from});
     window.location.href = href;
 }
+
+/**
+ * Converts a string into it's hash code.
+ * Used to check whether a packet sent properly.
+ * @param str The string to get the hashCode of.
+ * @returns {number} The generated hash code. Will always be constant for the same string.
+ */
+function hashCode(str) {
+	var res = 0,
+		len = str.length;
+	for (var i = 0; i < len; i++) {
+		res = res * 31 + str.charCodeAt(i);
+		res = res & res;
+	}
+	return res;
+}

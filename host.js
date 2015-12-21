@@ -55,7 +55,8 @@ function startSendDatas() {
             return;
         }
         if (packet.sent) {
-            sendOnChannel(true, {sent: true});
+            var hash = hashCode(packet.str);
+            sendOnChannel(true, {hash: hash});
             packetList.shift();
             return;
         }
